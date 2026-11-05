@@ -44,8 +44,10 @@ def test_result_lines_sit_between_the_chart_and_the_caption():
     app.text_input[0].input("Lunch?")
     app.text_area[0].input("Pizza\nSushi")
     app.button[0].click().run()
+    app.radio[0].set_value("Sushi")
+    app.button[0].click().run()
 
-    types = [element.type for element in app.main]
+    types =[element.type for element in app.main]
     chart = next(i for i, kind in enumerate(types) if "chart" in kind)
     lines = [i for i, kind in enumerate(types) if kind == "text"]
     caption = types.index("caption")

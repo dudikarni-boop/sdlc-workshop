@@ -84,4 +84,5 @@ Tests are written first in `tests/test_core.py` (red, then green) for each funct
 - 2026-11-05 · task 3 RED · `uv run python -m pytest -q` → 1 error during collection: `ImportError: cannot import name 'result_lines' from 'poll.core'` (expected; collection error interrupted the run before the new `test_app.py` assertion ran)
 - 2026-11-05 · task 3 GREEN · `uv run python -m pytest -q` → 33 passed in 10.78s; `uv run python -m ruff check .` → All checks passed!
 - 2026-11-05 · /sdlc:test gap pass · `uv run python -m pytest -q` → 36 passed in 3.09s; `uv run python -m ruff check .` → All checks passed! (4 gaps closed; new tests passed first run, no bugs found)
+- 2026-11-05 · review R2 fix · `uv run python -m pytest -q` → 36 passed in 3.21s; `uv run python -m ruff check .` → All checks passed!
 
