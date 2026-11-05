@@ -1,6 +1,6 @@
 import pytest
 
-from poll.core import create_poll, leaders, shares, tally, total_votes, vote
+from poll.core import create_poll, leaders, result_lines, shares, tally, total_votes, vote
 
 
 def make_poll():
@@ -154,3 +154,33 @@ def test_leaders_leave_the_poll_unchanged():
     leaders(poll)
 
     assert poll == before
+
+
+def test_result_lines_show_votes_share_and_a_trophy_for_the_leader():
+    poll = poll_with_votes({"Pizza": 3, "Sushi": 2})
+
+    assert result_lines(poll) == ["Pizza: 3 votes · 60% 🏆", "Sushi: 2 votes · 40%"]
+
+
+def test_result_lines_say_vote_for_a_single_vote():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 0})
+
+    assert result_lines(poll) == ["Pizza: 1 vote · 100% 🏆", "Sushi: 0 votes · 0%"]
+
+
+def test_result_lines_give_every_tied_leader_a_trophy():
+    poll = poll_with_votes({"Pizza": 2, "Sushi": 1, "Salad": 2})
+
+    assert result_lines(poll) == [
+        "Pizza: 2 votes · 40% 🏆",
+        "Sushi: 1 vote · 20%",
+        "Salad: 2 votes · 40% 🏆",
+    ]
+
+
+def test_result_lines_have_no_trophy_when_nobody_has_voted():
+    assert result_lines(make_poll()) == [
+        "Pizza: 0 votes · 0%",
+        "Sushi: 0 votes · 0%",
+        "Salad: 0 votes · 0%",
+    ]

@@ -73,3 +73,14 @@ def leaders(poll: Poll) -> list[str]:
     if top == 0:
         return []
     return [option for option, count in counts if count == top]
+
+
+def result_lines(poll: Poll) -> list[str]:
+    """One line per option, in creation order, e.g. 'Pizza: 3 votes · 60% 🏆' for a leader."""
+    leading = leaders(poll)
+    lines = []
+    for (option, count), (_, share) in zip(tally(poll), shares(poll), strict=True):
+        noun = "vote" if count == 1 else "votes"
+        trophy = " 🏆" if option in leading else ""
+        lines.append(f"{option}: {count} {noun} · {share}%{trophy}")
+    return lines

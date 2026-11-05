@@ -33,6 +33,10 @@ def test_create_a_poll_then_vote():
 
     assert store.load()["votes"] == {"Pizza": 0, "Sushi": 1}
     assert "1 votes so far" in app.caption[0].value
+    assert [line.value for line in app.text] == [
+        "Pizza: 0 votes · 0%",
+        "Sushi: 1 vote · 100% 🏆",
+    ]
 
 
 def test_invalid_poll_shows_an_error():
