@@ -70,7 +70,7 @@ Tests are written first in `tests/test_core.py` (red, then green) for each funct
 
 - [x] /sdlc:spec: approved 2026-11-05 after 6 questions
 - [x] /sdlc:plan: 3 tasks
-- [x] /sdlc:build: task 1 done (in progress)
+- [x] /sdlc:build: tasks 1–2 done (in progress)
 - [ ] /sdlc:test
 - [ ] /sdlc:review
 - [ ] /sdlc:code-simplify
@@ -79,4 +79,6 @@ Tests are written first in `tests/test_core.py` (red, then green) for each funct
 
 - 2026-11-05 · task 1 RED · `uv run python -m pytest tests/test_core.py -q` → 1 error during collection: `ImportError: cannot import name 'shares' from 'poll.core'` (expected)
 - 2026-11-05 · task 1 GREEN · `uv run python -m pytest -q` → 25 passed in 7.65s; `uv run python -m ruff check .` → All checks passed!
+- 2026-11-05 · task 2 RED · `uv run python -m pytest tests/test_core.py -q` → 1 error during collection: `ImportError: cannot import name 'leaders' from 'poll.core'` (expected)
+- 2026-11-05 · task 2 GREEN · `uv run python -m pytest -q` → 29 passed in 2.77s; `uv run python -m ruff check .` → All checks passed!
 

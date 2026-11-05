@@ -1,6 +1,6 @@
 import pytest
 
-from poll.core import create_poll, shares, tally, total_votes, vote
+from poll.core import create_poll, leaders, shares, tally, total_votes, vote
 
 
 def make_poll():
@@ -127,5 +127,30 @@ def test_shares_leave_the_poll_unchanged():
     before = {**poll, "votes": dict(poll["votes"])}
 
     shares(poll)
+
+    assert poll == before
+
+
+def test_nobody_leads_when_nobody_has_voted():
+    assert leaders(make_poll()) == []
+
+
+def test_the_option_with_the_most_votes_leads():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 3, "Salad": 2})
+
+    assert leaders(poll) == ["Sushi"]
+
+
+def test_every_option_tied_for_the_most_votes_leads():
+    poll = poll_with_votes({"Pizza": 2, "Sushi": 1, "Salad": 2})
+
+    assert leaders(poll) == ["Pizza", "Salad"]
+
+
+def test_leaders_leave_the_poll_unchanged():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 2})
+    before = {**poll, "votes": dict(poll["votes"])}
+
+    leaders(poll)
 
     assert poll == before

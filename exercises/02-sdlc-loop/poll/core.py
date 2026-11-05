@@ -64,3 +64,12 @@ def shares(poll: Poll) -> list[tuple[str, int]]:
         (option, floors_and_remainders[i][0] + (i in bumped))
         for i, (option, _) in enumerate(counts)
     ]
+
+
+def leaders(poll: Poll) -> list[str]:
+    """Options with the most votes, in creation order. Ties all lead; nobody leads at zero."""
+    counts = tally(poll)
+    top = max(count for _, count in counts)
+    if top == 0:
+        return []
+    return [option for option, count in counts if count == top]
