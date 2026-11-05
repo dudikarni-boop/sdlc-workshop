@@ -87,4 +87,5 @@ Tests are written first in `tests/test_core.py` (red, then green) for each funct
 - 2026-11-05 · review R2 fix · `uv run python -m pytest -q` → 36 passed in 3.21s; `uv run python -m ruff check .` → All checks passed!
 - 2026-11-05 · review R3 fix · `uv run python -m pytest -q` → 36 passed in 3.15s; `uv run python -m ruff check .` → All checks passed!
 - 2026-11-05 · /sdlc:code-simplify · `uv run python -m pytest -q` → 36 passed in 3.11s; `uv run python -m ruff check .` → All checks passed! (nothing to simplify)
+- 2026-11-05 12:32 · /sdlc:pr G4 · `uv run python -m pytest -q` → 36 passed in 3.10s; `uv run python -m ruff check .` → All checks passed!
 
