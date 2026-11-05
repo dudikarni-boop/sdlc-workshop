@@ -1,6 +1,8 @@
+import copy
+
 import pytest
 
-from poll.core import create_poll, tally, total_votes, vote
+from poll.core import create_poll, leaders, result_lines, shares, tally, total_votes, vote
 
 
 def make_poll():
@@ -71,3 +73,133 @@ def test_total_votes_counts_every_vote():
 
 def test_total_votes_is_zero_for_a_new_poll():
     assert total_votes(make_poll()) == 0
+
+
+def poll_with_votes(counts):
+    poll = create_poll("Lunch?", list(counts))
+    for option, count in counts.items():
+        for _ in range(count):
+            poll = vote(poll, option)
+    return poll
+
+
+def test_shares_are_zero_when_nobody_has_voted():
+    assert shares(make_poll()) == [("Pizza", 0), ("Sushi", 0), ("Salad", 0)]
+
+
+def test_shares_give_the_leftover_point_to_the_first_listed_option():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 1, "Salad": 1})
+
+    assert shares(poll) == [("Pizza", 34), ("Sushi", 33), ("Salad", 33)]
+
+
+def test_shares_add_up_to_100_when_plain_rounding_would_overshoot():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 1, "Salad": 3, "Tacos": 3})
+
+    assert shares(poll) == [("Pizza", 13), ("Sushi", 13), ("Salad", 37), ("Tacos", 37)]
+
+
+def test_shares_give_the_leftover_point_to_the_largest_remainder():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 2, "Salad": 4})
+
+    # 14.28 / 28.57 / 57.14: Sushi has the largest remainder.
+    assert shares(poll) == [("Pizza", 14), ("Sushi", 29), ("Salad", 57)]
+
+
+def test_shares_give_100_to_an_option_with_every_vote():
+    poll = poll_with_votes({"Pizza": 0, "Sushi": 5, "Salad": 0})
+
+    assert shares(poll) == [("Pizza", 0), ("Sushi", 100), ("Salad", 0)]
+
+
+def test_shares_always_add_up_to_100():
+    poll = poll_with_votes({"Pizza": 3, "Sushi": 5, "Salad": 9, "Tacos": 1, "Soup": 11})
+
+    assert sum(share for _, share in shares(poll)) == 100
+    assert all(isinstance(share, int) for _, share in shares(poll))
+
+
+def test_shares_break_a_remainder_tie_by_list_order_among_the_tied_options():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 4, "Salad": 4})
+
+    # 11.11 / 44.44 / 44.44: Sushi and Salad tie on remainder, Pizza's is smaller.
+    assert shares(poll) == [("Pizza", 11), ("Sushi", 45), ("Salad", 44)]
+
+
+def test_shares_keep_the_order_options_were_created_in():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 0, "Salad": 3})
+
+    assert [option for option, _ in shares(poll)] == ["Pizza", "Sushi", "Salad"]
+
+
+def test_shares_leave_the_poll_unchanged():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 2})
+    before = copy.deepcopy(poll)
+
+    shares(poll)
+
+    assert poll == before
+
+
+def test_nobody_leads_when_nobody_has_voted():
+    assert leaders(make_poll()) == []
+
+
+def test_the_option_with_the_most_votes_leads():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 3, "Salad": 2})
+
+    assert leaders(poll) == ["Sushi"]
+
+
+def test_every_option_tied_for_the_most_votes_leads():
+    poll = poll_with_votes({"Pizza": 2, "Sushi": 1, "Salad": 2})
+
+    assert leaders(poll) == ["Pizza", "Salad"]
+
+
+def test_leaders_leave_the_poll_unchanged():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 2})
+    before = copy.deepcopy(poll)
+
+    leaders(poll)
+
+    assert poll == before
+
+
+def test_result_lines_show_votes_share_and_a_trophy_for_the_leader():
+    poll = poll_with_votes({"Pizza": 3, "Sushi": 2})
+
+    assert result_lines(poll) == ["Pizza: 3 votes · 60% 🏆", "Sushi: 2 votes · 40%"]
+
+
+def test_result_lines_say_vote_for_a_single_vote():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 0})
+
+    assert result_lines(poll) == ["Pizza: 1 vote · 100% 🏆", "Sushi: 0 votes · 0%"]
+
+
+def test_result_lines_give_every_tied_leader_a_trophy():
+    poll = poll_with_votes({"Pizza": 2, "Sushi": 1, "Salad": 2})
+
+    assert result_lines(poll) == [
+        "Pizza: 2 votes · 40% 🏆",
+        "Sushi: 1 vote · 20%",
+        "Salad: 2 votes · 40% 🏆",
+    ]
+
+
+def test_result_lines_leave_the_poll_unchanged():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 2})
+    before = copy.deepcopy(poll)
+
+    result_lines(poll)
+
+    assert poll == before
+
+
+def test_result_lines_have_no_trophy_when_nobody_has_voted():
+    assert result_lines(make_poll()) == [
+        "Pizza: 0 votes · 0%",
+        "Sushi: 0 votes · 0%",
+        "Salad: 0 votes · 0%",
+    ]

@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 
 from poll import store
-from poll.core import create_poll, tally, total_votes, vote
+from poll.core import create_poll, result_lines, tally, total_votes, vote
 
 st.set_page_config(page_title="Live Poll", page_icon="🗳️")
 st.title("🗳️ Live Poll")
@@ -36,6 +36,8 @@ with st.form("vote"):
 
 results = pd.DataFrame(tally(poll), columns=["Option", "Votes"]).set_index("Option")
 st.bar_chart(results)
+for line in result_lines(poll):
+    st.text(line)
 st.caption(f"{total_votes(poll)} votes so far")
 
 if st.button("Reset poll"):

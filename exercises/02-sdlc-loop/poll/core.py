@@ -43,3 +43,44 @@ def tally(poll: Poll) -> list[tuple[str, int]]:
 
 def total_votes(poll: Poll) -> int:
     return sum(poll["votes"].values())
+
+
+def shares(poll: Poll) -> list[tuple[str, int]]:
+    """Whole-number percentages per option, in creation order, that add up to 100.
+
+    Each option gets its share rounded down, then the leftover points go to the largest
+    remainders. Equal remainders favour the option listed first. All zeros when nobody
+    has voted.
+    """
+    counts = tally(poll)
+    total = total_votes(poll)
+    if total == 0:
+        return [(option, 0) for option, _ in counts]
+    floors_and_remainders = [divmod(count * 100, total) for _, count in counts]
+    leftover = 100 - sum(floor for floor, _ in floors_and_remainders)
+    by_remainder = sorted(range(len(counts)), key=lambda i: -floors_and_remainders[i][1])
+    bumped = set(by_remainder[:leftover])
+    return [
+        (option, floors_and_remainders[i][0] + (1 if i in bumped else 0))
+        for i, (option, _) in enumerate(counts)
+    ]
+
+
+def leaders(poll: Poll) -> list[str]:
+    """Options with the most votes, in creation order. Ties all lead; nobody leads at zero."""
+    counts = tally(poll)
+    top = max(count for _, count in counts)
+    if top == 0:
+        return []
+    return [option for option, count in counts if count == top]
+
+
+def result_lines(poll: Poll) -> list[str]:
+    """One line per option, in creation order, e.g. 'Pizza: 3 votes · 60% 🏆' for a leader."""
+    leading = leaders(poll)
+    lines = []
+    for (option, count), (_, share) in zip(tally(poll), shares(poll), strict=True):
+        noun = "vote" if count == 1 else "votes"
+        trophy = " 🏆" if option in leading else ""
+        lines.append(f"{option}: {count} {noun} · {share}%{trophy}")
+    return lines

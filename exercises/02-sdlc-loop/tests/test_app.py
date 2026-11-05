@@ -33,6 +33,26 @@ def test_create_a_poll_then_vote():
 
     assert store.load()["votes"] == {"Pizza": 0, "Sushi": 1}
     assert "1 votes so far" in app.caption[0].value
+    assert [line.value for line in app.text] == [
+        "Pizza: 0 votes · 0%",
+        "Sushi: 1 vote · 100% 🏆",
+    ]
+
+
+def test_result_lines_sit_between_the_chart_and_the_caption():
+    app = run_app()
+    app.text_input[0].input("Lunch?")
+    app.text_area[0].input("Pizza\nSushi")
+    app.button[0].click().run()
+    app.radio[0].set_value("Sushi")
+    app.button[0].click().run()
+
+    types =[element.type for element in app.main]
+    chart = next(i for i, kind in enumerate(types) if "chart" in kind)
+    lines = [i for i, kind in enumerate(types) if kind == "text"]
+    caption = types.index("caption")
+
+    assert chart < lines[0] and lines[-1] < caption
 
 
 def test_invalid_poll_shows_an_error():
