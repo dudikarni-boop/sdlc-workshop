@@ -73,7 +73,7 @@ Tests are written first in `tests/test_core.py` (red, then green) for each funct
 - [x] /sdlc:build: 3 tasks, one commit each
 - [x] /sdlc:test: 11 criteria + 8 edge cases mapped, 4 gaps closed, no bugs
 - [x] /sdlc:review: 3 findings (all Suggestions): 2 fixed, 1 won't fix
-- [ ] /sdlc:code-simplify
+- [x] /sdlc:code-simplify: nothing to simplify (R3 readability fix already landed in review)
 
 ## Test evidence
 
@@ -86,4 +86,5 @@ Tests are written first in `tests/test_core.py` (red, then green) for each funct
 - 2026-11-05 · /sdlc:test gap pass · `uv run python -m pytest -q` → 36 passed in 3.09s; `uv run python -m ruff check .` → All checks passed! (4 gaps closed; new tests passed first run, no bugs found)
 - 2026-11-05 · review R2 fix · `uv run python -m pytest -q` → 36 passed in 3.21s; `uv run python -m ruff check .` → All checks passed!
 - 2026-11-05 · review R3 fix · `uv run python -m pytest -q` → 36 passed in 3.15s; `uv run python -m ruff check .` → All checks passed!
+- 2026-11-05 · /sdlc:code-simplify · `uv run python -m pytest -q` → 36 passed in 3.11s; `uv run python -m ruff check .` → All checks passed! (nothing to simplify)
 
