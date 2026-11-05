@@ -61,7 +61,7 @@ def shares(poll: Poll) -> list[tuple[str, int]]:
     by_remainder = sorted(range(len(counts)), key=lambda i: -floors_and_remainders[i][1])
     bumped = set(by_remainder[:leftover])
     return [
-        (option, floors_and_remainders[i][0] + (i in bumped))
+        (option, floors_and_remainders[i][0] + (1 if i in bumped else 0))
         for i, (option, _) in enumerate(counts)
     ]
 
