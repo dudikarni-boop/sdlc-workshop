@@ -39,6 +39,20 @@ def test_create_a_poll_then_vote():
     ]
 
 
+def test_result_lines_sit_between_the_chart_and_the_caption():
+    app = run_app()
+    app.text_input[0].input("Lunch?")
+    app.text_area[0].input("Pizza\nSushi")
+    app.button[0].click().run()
+
+    types = [element.type for element in app.main]
+    chart = next(i for i, kind in enumerate(types) if "chart" in kind)
+    lines = [i for i, kind in enumerate(types) if kind == "text"]
+    caption = types.index("caption")
+
+    assert chart < lines[0] and lines[-1] < caption
+
+
 def test_invalid_poll_shows_an_error():
     app = run_app()
     app.text_input[0].input("Lunch?")

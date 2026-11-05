@@ -1,3 +1,5 @@
+import copy
+
 import pytest
 
 from poll.core import create_poll, leaders, result_lines, shares, tally, total_votes, vote
@@ -114,6 +116,14 @@ def test_shares_always_add_up_to_100():
     poll = poll_with_votes({"Pizza": 3, "Sushi": 5, "Salad": 9, "Tacos": 1, "Soup": 11})
 
     assert sum(share for _, share in shares(poll)) == 100
+    assert all(isinstance(share, int) for _, share in shares(poll))
+
+
+def test_shares_break_a_remainder_tie_by_list_order_among_the_tied_options():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 4, "Salad": 4})
+
+    # 11.11 / 44.44 / 44.44: Sushi and Salad tie on remainder, Pizza's is smaller.
+    assert shares(poll) == [("Pizza", 11), ("Sushi", 45), ("Salad", 44)]
 
 
 def test_shares_keep_the_order_options_were_created_in():
@@ -124,7 +134,7 @@ def test_shares_keep_the_order_options_were_created_in():
 
 def test_shares_leave_the_poll_unchanged():
     poll = poll_with_votes({"Pizza": 1, "Sushi": 2})
-    before = {**poll, "votes": dict(poll["votes"])}
+    before = copy.deepcopy(poll)
 
     shares(poll)
 
@@ -149,7 +159,7 @@ def test_every_option_tied_for_the_most_votes_leads():
 
 def test_leaders_leave_the_poll_unchanged():
     poll = poll_with_votes({"Pizza": 1, "Sushi": 2})
-    before = {**poll, "votes": dict(poll["votes"])}
+    before = copy.deepcopy(poll)
 
     leaders(poll)
 
@@ -176,6 +186,15 @@ def test_result_lines_give_every_tied_leader_a_trophy():
         "Sushi: 1 vote · 20%",
         "Salad: 2 votes · 40% 🏆",
     ]
+
+
+def test_result_lines_leave_the_poll_unchanged():
+    poll = poll_with_votes({"Pizza": 1, "Sushi": 2})
+    before = copy.deepcopy(poll)
+
+    result_lines(poll)
+
+    assert poll == before
 
 
 def test_result_lines_have_no_trophy_when_nobody_has_voted():
