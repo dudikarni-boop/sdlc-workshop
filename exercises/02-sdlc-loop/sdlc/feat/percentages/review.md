@@ -13,6 +13,6 @@ Scope: `git diff $(git merge-base HEAD main)` at `4aa7c63`.
 
 | ID | Severity | Axis | Location | Finding | Fix | Status |
 |---|---|---|---|---|---|---|
-| R1 | Suggestion | Correctness / UX | `app.py:41`, `tests/test_app.py:35` | The caption reads "1 votes so far" right under "Sushi: 1 vote · 100% 🏆". The spec limits the singular rule to the result lines, so this branch follows the spec. | Follow-up outside this spec: add a `votes_label(n)` helper to the core, use it for both the lines and the caption, and update the assertion. | open |
+| R1 | Suggestion | Correctness / UX | `app.py:41`, `tests/test_app.py:35` | The caption reads "1 votes so far" right under "Sushi: 1 vote · 100% 🏆". The spec limits the singular rule to the result lines, so this branch follows the spec. | Follow-up outside this spec: add a `votes_label(n)` helper to the core, use it for both the lines and the caption, and update the assertion. | won't fix: outside this spec (the singular rule covers only the result lines); worth a follow-up branch |
 | R2 | Suggestion | Tests | `tests/test_app.py:42-54` | The placement test never votes. That leaves spec #10 ("a poll with votes") checked only for placement when every line is `0%`. | Vote before checking the order, or fold the order check into `test_create_a_poll_then_vote`. | fixed |
 | R3 | Suggestion | Readability | `poll/core.py:64` | `floors_and_remainders[i][0] + (i in bumped)` adds a bool to an int, which the reader has to decode. | Use `+ (1 if i in bumped else 0)`, or leave it for `/sdlc:code-simplify`. | fixed |

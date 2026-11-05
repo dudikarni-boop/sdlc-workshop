@@ -72,7 +72,7 @@ Tests are written first in `tests/test_core.py` (red, then green) for each funct
 - [x] /sdlc:plan: 3 tasks
 - [x] /sdlc:build: 3 tasks, one commit each
 - [x] /sdlc:test: 11 criteria + 8 edge cases mapped, 4 gaps closed, no bugs
-- [ ] /sdlc:review
+- [x] /sdlc:review: 3 findings (all Suggestions): 2 fixed, 1 won't fix
 - [ ] /sdlc:code-simplify
 
 ## Test evidence
