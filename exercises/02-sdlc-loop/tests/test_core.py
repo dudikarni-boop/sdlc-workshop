@@ -1,6 +1,8 @@
+from datetime import datetime
+
 import pytest
 
-from poll.core import create_poll, tally, total_votes, vote
+from poll.core import create_poll, created_label, tally, total_votes, vote
 
 
 def make_poll():
@@ -71,3 +73,36 @@ def test_total_votes_counts_every_vote():
 
 def test_total_votes_is_zero_for_a_new_poll():
     assert total_votes(make_poll()) == 0
+
+
+def test_create_poll_records_when_it_was_created():
+    poll = create_poll("Lunch?", ["Pizza", "Sushi"], created_at=datetime(2026, 11, 5, 10, 31, 24))
+
+    assert poll["created_at"] == "2026-11-05T10:31:24"
+
+
+def test_create_poll_without_a_time_has_no_created_at():
+    assert make_poll()["created_at"] is None
+
+
+def test_vote_keeps_the_created_at():
+    poll = create_poll("Lunch?", ["Pizza", "Sushi"], created_at=datetime(2026, 11, 5, 10, 31))
+
+    assert vote(poll, "Pizza")["created_at"] == poll["created_at"]
+
+
+def test_created_label_shows_date_and_time():
+    poll = create_poll("Lunch?", ["Pizza", "Sushi"], created_at=datetime(2026, 11, 5, 9, 7, 59))
+
+    assert created_label(poll) == "Created 2026-11-05 09:07"
+
+
+def test_created_label_is_none_for_a_poll_without_a_time():
+    assert created_label(make_poll()) is None
+
+
+def test_created_label_is_none_for_a_poll_saved_before_created_at_existed():
+    old_poll = make_poll()
+    del old_poll["created_at"]
+
+    assert created_label(old_poll) is None

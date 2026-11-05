@@ -27,12 +27,14 @@ def test_create_a_poll_then_vote():
     app.button[0].click().run()
 
     assert app.subheader[0].value == "Lunch?"
+    assert app.caption[0].value.startswith("Created ")
+    assert store.load()["created_at"] is not None
 
     app.radio[0].set_value("Sushi")
     app.button[0].click().run()
 
     assert store.load()["votes"] == {"Pizza": 0, "Sushi": 1}
-    assert "1 votes so far" in app.caption[0].value
+    assert "1 votes so far" in app.caption[1].value
 
 
 def test_invalid_poll_shows_an_error():
